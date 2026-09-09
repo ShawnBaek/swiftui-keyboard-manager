@@ -21,6 +21,23 @@ and other device configurations remain unverified.
 
 ## Published recording
 
+https://github.com/user-attachments/assets/7f30d0a8-0832-411b-bf4e-c4743efdb4dd
+
+The maintainer supplied this replacement recording on September 10, 2026.
+It shows typing `Swift UI` in the Bio TextEditor, keyboard dismissal while
+scrolling, and further field-focus transitions. It was uploaded unchanged,
+without additional trimming, speed changes, or re-encoding.
+
+- H.264 MP4, 1206 × 2622 pixels, no audio.
+- Duration: 20.416667 seconds; size: 8,858,224 bytes.
+- SHA-256: `1b369f695b6ef473a511592c996417e253dee839ea2f1cab7ca35399949fe8dd`.
+- Exact source revision and capture toolchain were not independently recorded
+  for this supplied file; the verification below belongs to the earlier run.
+
+## Earlier agent verification recording
+
+This earlier clip is retained as historical evidence, not the README demo.
+
 https://github.com/user-attachments/assets/93c56c58-d5f4-4981-a7fa-9710b8a44d15
 
 Captured on a newly created, dedicated iPhone 17 Pro Simulator with iOS 27
@@ -47,7 +64,7 @@ keyboard top: 546 points (16-point spacing).
 - Trim tool: Apple `avconvert`, `PresetPassthrough`; no re-encode, speed change,
   intermediate cuts, reordered actions, or fabricated frames.
 - Raw SHA-256: `e558259ca63f8e40ad907a18168aa46196b85bee5244276e25347f8ebaf1c875`.
-- Published SHA-256: `e257a5b250cb9c62665eda3a732bd0cf64932ade403f1272854638ab68c1d83a`.
+- Earlier trimmed SHA-256: `e257a5b250cb9c62665eda3a732bd0cf64932ade403f1272854638ab68c1d83a`.
 
 The recording shows this specific interaction, not universal frame-perfect
 synchronization across all supported OS versions or keyboard configurations.

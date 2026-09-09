@@ -11,11 +11,11 @@ Built from a real form used in Native Mobile.
 
 ## See it in action
 
-Real iPhone 17 Pro Simulator recording (iOS 27): focus the lower `TextEditor`,
+Maintainer-recorded iPhone Simulator demo: focus the lower `TextEditor`,
 type with the software keyboard, then drag to dismiss. The sample uses
 `.keyboardManager(dismiss: .onDrag)` with 16-point keyboard spacing.
 
-https://github.com/user-attachments/assets/93c56c58-d5f4-4981-a7fa-9710b8a44d15
+https://github.com/user-attachments/assets/7f30d0a8-0832-411b-bf4e-c4743efdb4dd
 
 [Recording and verification details](Documentation/Demo.md)
 
