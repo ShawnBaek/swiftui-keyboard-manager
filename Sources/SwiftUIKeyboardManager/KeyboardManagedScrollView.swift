@@ -20,11 +20,13 @@ public struct KeyboardManagedScrollView<Content: View>: View {
     private let keyboardSpacing: CGFloat
     private let onDismiss: () -> Void
     private let content: Content
+    private let showsIndicators: Bool
     @Environment(\.self) private var environment
 
     public init(
         swipeToDismiss: SwipeToDismiss = .onDrag,
         keyboardSpacing: CGFloat = 16,
+        showsIndicators: Bool = true,
         onDismiss: @escaping () -> Void = {},
         @ViewBuilder content: () -> Content
     ) {
@@ -32,16 +34,48 @@ public struct KeyboardManagedScrollView<Content: View>: View {
         self.keyboardSpacing = keyboardSpacing.isFinite ? max(0, keyboardSpacing) : 16
         self.onDismiss = onDismiss
         self.content = content()
+        self.showsIndicators = showsIndicators
     }
 
     public var body: some View {
         #if os(iOS)
-        KeyboardTrackingScrollView(onUserScroll: onDismiss, mode: swipeToDismiss, spacing: keyboardSpacing) {
+        KeyboardTrackingScrollView(onUserScroll: onDismiss, mode: swipeToDismiss, spacing: keyboardSpacing, showsIndicators: showsIndicators) {
             content.environment(\.self, environment)
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
         #else
         ScrollView { content }
+        #endif
+    }
+}
+
+public extension ScrollView {
+    /// Adds keyboard-synchronized scrolling with automatic input tracking.
+    ///
+    /// Call directly on a vertical `ScrollView`, before other view modifiers.
+    /// The adapter uses its public content in an owned scroll container, rather
+    /// than inspecting SwiftUI's private scroll implementation. Use eager content
+    /// such as `VStack`; native scroll-position APIs and lazy stacks aren't supported.
+    /// Horizontal/mixed-axis views retain native scrolling and dismissal only.
+    @MainActor @ViewBuilder
+    func keyboardManager(
+        dismiss: SwipeToDismiss = .onDrag,
+        keyboardSpacing: CGFloat = 16
+    ) -> some View {
+        #if os(iOS)
+        if axes == .vertical {
+            KeyboardManagedScrollView(
+                swipeToDismiss: dismiss,
+                keyboardSpacing: keyboardSpacing,
+                showsIndicators: showsIndicators
+            ) { content }
+        } else {
+            self.scrollDismissesKeyboard(
+                dismiss == .never ? .never : dismiss == .onDrag ? .immediately : .interactively
+            )
+        }
+        #else
+        self
         #endif
     }
 }

@@ -15,22 +15,21 @@ private struct ProfileFormView: View {
         case name
         case email
         case role
+        case location
         case bio
     }
 
     @State private var name = ""
     @State private var email = ""
     @State private var role = ""
+    @State private var location = ""
     @State private var bio = ""
-    @State private var swipeToDismiss: SwipeToDismiss = .interactive
+    @State private var swipeToDismiss: SwipeToDismiss = .onDrag
     @FocusState private var focusedField: Field?
 
     var body: some View {
         NavigationStack {
-            KeyboardManagedScrollView(
-                swipeToDismiss: swipeToDismiss,
-                onDismiss: { focusedField = nil }
-            ) {
+            ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     header
                     keyboardBehaviorPicker
@@ -39,6 +38,8 @@ private struct ProfileFormView: View {
                 }
                 .padding()
             }
+            .keyboardManager(dismiss: swipeToDismiss)
+            .background(Color(uiColor: .systemGroupedBackground))
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.inline)
         }
@@ -78,7 +79,6 @@ private struct ProfileFormView: View {
                 .autocorrectionDisabled()
                 .textFieldStyle(.roundedBorder)
                 .focused($focusedField, equals: .name)
-                .keyboardManagedFocus(focusedField == .name)
                 .accessibilityIdentifier("keyboard-demo-name")
 
             TextField("Email", text: $email)
@@ -88,15 +88,19 @@ private struct ProfileFormView: View {
                 .autocorrectionDisabled()
                 .textFieldStyle(.roundedBorder)
                 .focused($focusedField, equals: .email)
-                .keyboardManagedFocus(focusedField == .email)
                 .accessibilityIdentifier("keyboard-demo-email")
 
             TextField("Role", text: $role)
                 .textContentType(.jobTitle)
                 .textFieldStyle(.roundedBorder)
                 .focused($focusedField, equals: .role)
-                .keyboardManagedFocus(focusedField == .role)
                 .accessibilityIdentifier("keyboard-demo-role")
+
+            TextField("Location", text: $location)
+                .textContentType(.fullStreetAddress)
+                .textFieldStyle(.roundedBorder)
+                .focused($focusedField, equals: .location)
+                .accessibilityIdentifier("keyboard-demo-location")
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("About you")
@@ -104,12 +108,13 @@ private struct ProfileFormView: View {
                 TextEditor(text: $bio)
                     .frame(minHeight: 160)
                     .padding(4)
+                    .scrollContentBackground(.hidden)
+                    .background(.background, in: RoundedRectangle(cornerRadius: 8))
                     .overlay {
                         RoundedRectangle(cornerRadius: 8)
                             .stroke(.quaternary, lineWidth: 1)
                     }
                     .focused($focusedField, equals: .bio)
-                    .keyboardManagedFocus(focusedField == .bio)
                     .accessibilityIdentifier("keyboard-demo-bio")
             }
         }
@@ -135,6 +140,8 @@ private struct ProfileFormView: View {
         case .email:
             focusedField = .role
         case .role:
+            focusedField = .location
+        case .location:
             focusedField = .bio
         case .bio, nil:
             focusedField = .name

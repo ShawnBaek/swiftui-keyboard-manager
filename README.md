@@ -39,36 +39,28 @@ import SwiftUI
 import SwiftUIKeyboardManager
 
 struct ProfileForm: View {
-    enum Field: Hashable { case name, notes }
     @State private var name = ""
     @State private var notes = ""
-    @FocusState private var focus: Field?
 
     var body: some View {
-        KeyboardManagedScrollView(
-            swipeToDismiss: .onDrag,
-            keyboardSpacing: 16,
-            onDismiss: { focus = nil }
-        ) {
+        ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 TextField("Name", text: $name)
-                    .focused($focus, equals: .name)
-                    .keyboardManagedFocus(focus == .name)
 
                 TextEditor(text: $notes)
                     .frame(height: 180)
-                    .focused($focus, equals: .notes)
-                    .keyboardManagedFocus(focus == .notes)
             }
             .padding()
         }
+        .keyboardManager(dismiss: .onDrag)
     }
 }
 ```
 
-Use the same marker with `SecureField`, a vertical `TextField`, or a custom
-SwiftUI input. The package observes the marked view's bounds, not its text.
-For a wrapped UIKit `UITextView`, connect its focus state to the same marker.
+Apply `keyboardManager` directly to a `ScrollView`, before modifiers that erase
+its type. The managed vertical path replaces the native scroll view with an
+owned `UIScrollView` hosting the public SwiftUI content; it does not introspect
+or modify SwiftUI's native scroll view in place.
 
 ### Swipe-to-dismiss
 
@@ -78,21 +70,21 @@ For a wrapped UIKit `UITextView`, connect its focus state to the same marker.
 | `.onDrag` (default) | Clear focus and dismiss when a user starts dragging. |
 | `.interactive` | Use UIKit's interactive keyboard dismissal gesture. |
 
-Pass `onDismiss` to clear your SwiftUI `FocusState`.
-Programmatic scrolling does not invoke the drag dismissal callback.
-`keyboardSpacing` is the requested gap above the keyboard (default: 16 points).
+Use `@FocusState` only when your app needs programmatic Next or Done controls.
 
 ## Container contract
 
-- Replace the outer vertical `ScrollView` or form layout with this container.
-  Put a `VStack`, sections, or cards inside it. **Do not nest a Form, List,
-  LazyVStack, or another vertical ScrollView** and expect automatic integration.
+- Apply the modifier to a vertical `ScrollView` with eager `VStack` content.
+  Horizontal or mixed-axis scroll views retain their native scrolling and
+  native dismissal behavior. `List`, `Form`, `LazyVStack`, `ScrollViewReader`,
+  `scrollPosition`, and other advanced scroll configurations are not supported
+  by the managed vertical path.
 - Keep navigation destinations, sheets and app-level toolbars outside the
   managed container. Environment values are forwarded to the hosted content.
 - Do not add keyboard-height padding or a second keyboard avoidance system.
-- A marked editor taller than the viewport keeps its top visible. **Caret-level
-  tracking inside a long TextEditor is not implemented.** Its own scrolling
-  remains responsible for the insertion point.
+- A `TextEditor` taller than the viewport keeps its top visible. **Caret-level
+  tracking inside a long editor is not implemented.** Its own scrolling remains
+  responsible for the insertion point.
 - Keyboard accessory/toolbars are owned by the app. This package does not
   create a Done/Next accessory or promise compatibility with every custom bar.
 - Floating/split keyboards, external displays, Stage Manager, nested input
@@ -102,8 +94,9 @@ Programmatic scrolling does not invoke the drag dismissal callback.
 ## How it works
 
 SwiftUI renders the content and input controls. A small owned UIScrollView /
-UIHostingController bridge converts the focused marker into scroll-content
-coordinates. It compares the marker to the keyboard's converted end frame,
+UIHostingController bridge listens for public text-input editing notifications
+and converts the active input into scroll-content coordinates. It compares
+the input to the keyboard's converted end frame,
 adds only the needed reveal distance, clamps the offset, and changes inset and
 offset using the keyboard notification's animation duration and curve.
 
@@ -111,6 +104,11 @@ Apple already provides keyboard safe areas, dismissal modifiers and
 UIKeyboardLayoutGuide. This package packages an explicit reveal policy for
 SwiftUI forms; it does not claim Apple lacks keyboard support or that keyboard
 notifications are the only solution.
+
+The original `KeyboardManagedScrollView` and `.keyboardManagedFocus(_:)` APIs
+remain available for existing integrations and explicit custom focus bounds.
+They are not required by the simple modifier API. Container backgrounds are
+transparent; your app owns its background and the system owns keyboard appearance.
 
 - [Apple: Keep up with the keyboard](https://developer.apple.com/videos/play/wwdc2023/10281/)
 - [Apple: Keyboard layout guide](https://developer.apple.com/documentation/uikit/adjusting-your-layout-with-keyboard-layout-guide)
@@ -122,9 +120,8 @@ Open `Examples/KeyboardDemo`, run `xcodegen generate`, and open
 `KeyboardDemo.xcodeproj`. Choose an iPhone simulator and run **KeyboardDemo**.
 The sample links the local package, so changing the library updates the demo.
 
-The sample covers several fields, a multiline editor, scroll positions and
-all three dismissal modes. See [demo evidence](Documentation/Demo.md) for the
-recording and the exact verified scope.
+The sample covers several fields, a multiline editor, enough lower content to
+scroll, and all three dismissal modes. Runtime demo evidence is pending.
 
 ## Apps using this library
 

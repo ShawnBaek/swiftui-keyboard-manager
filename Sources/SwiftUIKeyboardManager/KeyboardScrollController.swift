@@ -10,6 +10,7 @@ struct KeyboardTrackingScrollView<Content: View>: UIViewControllerRepresentable 
     var onUserScroll: () -> Void
     var mode: SwipeToDismiss
     var spacing: CGFloat
+    var showsIndicators: Bool
     @ViewBuilder var content: () -> Content
 
     func makeUIViewController(context: Context) -> KeyboardScrollController<Content> {
@@ -22,6 +23,7 @@ struct KeyboardTrackingScrollView<Content: View>: UIViewControllerRepresentable 
         controller.mode = mode
         controller.spacing = spacing
         controller.updateDismissMode()
+        controller.setShowsIndicators(showsIndicators)
     }
 }
 
@@ -79,6 +81,7 @@ final class KeyboardScrollController<Content: View>: UIViewController, UIScrollV
     private var keyboardScreenFrame: CGRect = .null
     private var animationEnd: TimeInterval = 0
     private var animationOptions: UIView.AnimationOptions = []
+    private weak var activeInput: UIView?
 
     init(content: Content, mode: SwipeToDismiss, spacing: CGFloat, onUserScroll: @escaping () -> Void) {
         host = UIHostingController(rootView: content)
@@ -94,6 +97,9 @@ final class KeyboardScrollController<Content: View>: UIViewController, UIScrollV
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
+        view.isOpaque = false
+        scroll.backgroundColor = .clear
+        scroll.isOpaque = false
         scroll.translatesAutoresizingMaskIntoConstraints = false
         updateDismissMode()
         scroll.delegate = self
@@ -111,6 +117,7 @@ final class KeyboardScrollController<Content: View>: UIViewController, UIScrollV
         host.safeAreaRegions = []
         host.sizingOptions = .intrinsicContentSize
         host.view.backgroundColor = .clear
+        host.view.isOpaque = false
         host.view.translatesAutoresizingMaskIntoConstraints = false
         scroll.addSubview(host.view)
         NSLayoutConstraint.activate([
@@ -126,9 +133,35 @@ final class KeyboardScrollController<Content: View>: UIViewController, UIScrollV
             name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardChanged(_:)),
             name: UIResponder.keyboardWillHideNotification, object: nil)
+        for name in [UITextField.textDidBeginEditingNotification, UITextView.textDidBeginEditingNotification] {
+            NotificationCenter.default.addObserver(self, selector: #selector(inputBeganEditing(_:)), name: name, object: nil)
+        }
+        for name in [UITextField.textDidEndEditingNotification, UITextView.textDidEndEditingNotification] {
+            NotificationCenter.default.addObserver(self, selector: #selector(inputEndedEditing(_:)), name: name, object: nil)
+        }
     }
 
     deinit { NotificationCenter.default.removeObserver(self) }
+
+    func setShowsIndicators(_ value: Bool) {
+        loadViewIfNeeded()
+        scroll.showsVerticalScrollIndicator = value
+    }
+
+    @objc private func inputBeganEditing(_ notification: Notification) {
+        guard let input = notification.object as? UIView,
+              input.isDescendant(of: scroll), input.window === view.window else { return }
+        // Public editing notifications provide the actual responder: no swizzling,
+        // private class names, or application-wide first-responder search.
+        activeInput = input
+        adjustForKeyboard()
+    }
+
+    @objc private func inputEndedEditing(_ notification: Notification) {
+        if let input = notification.object as? UIView, input === activeInput {
+            activeInput = nil
+        }
+    }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         guard mode == .onDrag else { return }
@@ -147,7 +180,8 @@ final class KeyboardScrollController<Content: View>: UIViewController, UIScrollV
     }
 
     @objc private func keyboardChanged(_ notification: Notification) {
-        guard view.window != nil, let info = notification.userInfo else { return }
+        guard view.window != nil, let info = notification.userInfo,
+              activeInput != nil || scroll.focusedMarker != nil || !keyboardScreenFrame.isNull else { return }
         if let screen = notification.object as? UIScreen,
            screen !== view.window?.screen { return }
         if notification.name == UIResponder.keyboardWillHideNotification, mode == .interactive {
@@ -178,9 +212,9 @@ final class KeyboardScrollController<Content: View>: UIViewController, UIScrollV
         let docked = !overlap.isNull && keyboard.maxY >= view.bounds.maxY - 1
         let bottomInset = docked ? overlap.height : 0
         var offset = scroll.contentOffset
-        if let marker = scroll.focusedMarker, !overlap.isNull {
-            let field = marker.convert(marker.bounds, to: scroll)
-            let fieldInView = marker.convert(marker.bounds, to: view)
+        if let input = (scroll.focusedMarker as UIView?) ?? activeInput, !overlap.isNull {
+            let field = input.convert(input.bounds, to: scroll)
+            let fieldInView = input.convert(input.bounds, to: view)
             if docked || fieldInView.intersects(keyboard) {
                 let visibleBottom = scroll.convert(CGPoint(x: 0, y: keyboard.minY), from: view).y - spacing
                 offset.y = KeyboardGeometry.revealOffset(current: offset.y, field: field, visibleBottom: visibleBottom, spacing: spacing)
