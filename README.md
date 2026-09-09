@@ -9,6 +9,16 @@ Built from a real form used in Native Mobile.
 > Keyboard behavior targets iPhone and iPad; macOS uses a plain ScrollView fallback.
 > A successful build is not a guarantee across every OS, keyboard, or container.
 
+## See it in action
+
+Real iPhone 17 Pro Simulator recording (iOS 27): focus the lower `TextEditor`,
+type with the software keyboard, then drag to dismiss. The sample uses
+`.keyboardManager(dismiss: .onDrag)` with 16-point keyboard spacing.
+
+https://github.com/user-attachments/assets/93c56c58-d5f4-4981-a7fa-9710b8a44d15
+
+[Recording and verification details](Documentation/Demo.md)
+
 ## Install
 
 In Xcode, choose **File → Add Package Dependencies** and enter:
@@ -125,7 +135,8 @@ Open `Examples/KeyboardDemo`, run `xcodegen generate`, and open
 The sample links the local package, so changing the library updates the demo.
 
 The sample covers several fields, a multiline editor, enough lower content to
-scroll, and all three dismissal modes. Runtime demo evidence is pending.
+scroll, and all three dismissal modes. The recording above demonstrates the
+multiline editor and on-drag dismissal on a dedicated iPhone Simulator.
 
 ## Apps using this library
 
