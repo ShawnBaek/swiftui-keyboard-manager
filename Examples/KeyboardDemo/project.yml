@@ -1,0 +1,32 @@
+name: KeyboardDemo
+options:
+  minimumXcodeGenVersion: 2.38.0
+
+packages:
+  SwiftUIKeyboardManager:
+    path: ../..
+
+targets:
+  KeyboardDemo:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - Sources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.shawnbaek.keyboardmanager.demo
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Keyboard Demo
+        SWIFT_VERSION: 5.0
+    dependencies:
+      - package: SwiftUIKeyboardManager
+        product: SwiftUIKeyboardManager
+
+schemes:
+  KeyboardDemo:
+    build:
+      targets:
+        KeyboardDemo: all
+    run:
+      config: Debug

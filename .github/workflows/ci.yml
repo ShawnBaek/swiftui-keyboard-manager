@@ -1,0 +1,12 @@
+name: Package
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - run: swift test
+      - name: Compile iOS library
+        run: xcodebuild -scheme SwiftUIKeyboardManager -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
