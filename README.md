@@ -80,7 +80,11 @@ Use `@FocusState` only when your app needs programmatic Next or Done controls.
   `scrollPosition`, and other advanced scroll configurations are not supported
   by the managed vertical path.
 - Keep navigation destinations, sheets and app-level toolbars outside the
-  managed container. Environment values are forwarded to the hosted content.
+  managed container. Color scheme, Dynamic Type, locale, layout direction and
+  enabled state are forwarded. Inject app-specific environment objects/values
+  on the content inside the `ScrollView`; do not rely on them crossing the
+  UIKit hosting boundary automatically. Copying the entire SwiftUI environment
+  can suppress the hosted inputs' accessibility tree.
 - Do not add keyboard-height padding or a second keyboard avoidance system.
 - A `TextEditor` taller than the viewport keeps its top visible. **Caret-level
   tracking inside a long editor is not implemented.** Its own scrolling remains

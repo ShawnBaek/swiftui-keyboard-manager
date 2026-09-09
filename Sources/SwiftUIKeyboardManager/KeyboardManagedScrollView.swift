@@ -40,7 +40,15 @@ public struct KeyboardManagedScrollView<Content: View>: View {
     public var body: some View {
         #if os(iOS)
         KeyboardTrackingScrollView(onUserScroll: onDismiss, mode: swipeToDismiss, spacing: keyboardSpacing, showsIndicators: showsIndicators) {
-            content.environment(\.self, environment)
+            // Forward appearance, not the parent's internal accessibility context.
+            // Clients inject app-specific environment dependencies on `content`.
+            content
+                .environment(\.colorScheme, environment.colorScheme)
+                .environment(\.dynamicTypeSize, environment.dynamicTypeSize)
+                .environment(\.locale, environment.locale)
+                .environment(\.layoutDirection, environment.layoutDirection)
+                .environment(\.isEnabled, environment.isEnabled)
+                .accessibilityElement(children: .contain)
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
         #else
