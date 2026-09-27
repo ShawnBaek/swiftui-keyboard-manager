@@ -19,6 +19,17 @@ https://github.com/user-attachments/assets/7f30d0a8-0832-411b-bf4e-c4743efdb4dd
 
 [Recording and verification details](Documentation/Demo.md)
 
+### Real-device comparison: Items and Notes
+
+Left: **Pure SwiftUI** (the app's existing scroll view). Right:
+**SwiftUIKeyboardManager**. The left side plays Items then Notes once,
+followed immediately by the same sequence on the right.
+
+Both recordings keep their original playback speed and complete focus movements.
+Repeated attempts and the trailing gallery scene were removed; the inactive side
+holds a still frame. This demonstrates one app on one iPhone, not a universal
+comparison of SwiftUI keyboard behavior. [Recording details](Documentation/Demo.md#real-device-items-and-notes-comparison).
+
 ## Install
 
 In Xcode, choose **File → Add Package Dependencies** and enter:

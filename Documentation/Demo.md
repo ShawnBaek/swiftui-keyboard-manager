@@ -1,5 +1,34 @@
 # Demo evidence
 
+## Real-device Items and Notes comparison
+
+The maintainer supplied both recordings on September 27, 2026, from TravelCrumb
+on an iPhone 15 Pro running iOS 27.0. The library integration uses revision
+`a9171403f9a0eb194d036c396a4f2b9523789a41`.
+
+- Left: the app's existing SwiftUI ScrollView with the keyboard-manager modifier
+  and its accompanying keyboard-background changes temporarily disabled.
+- Right: the same app with SwiftUIKeyboardManager enabled.
+- Each side shows Items followed by Notes once. The left sequence plays first;
+  the right begins immediately after it. The inactive side is explicitly labeled
+  and holds its first or last frame.
+- Left source: `ScreenRecording_09-27-2026 18-06-46_1.MP4`, 1.8-7.9 seconds.
+- Right source: `ScreenRecording_09-27-2026 18-02-41_1.MP4`, approximately
+  3.733333-6.866667 seconds.
+- Each selected interval is continuous and keeps the original playback speed.
+  No intermediate focus movement is removed or frozen on the playing side.
+  Repeated attempts and the trailing gallery scene are excluded.
+- The MP4 is re-encoded at 60 fps, 1192 x 1372 pixels, duration 9.233333 seconds.
+- MP4 SHA-256:
+  `9fa1d184e2e3429ca2cdc15dafdf0d524035985cbd13092304a1714885d38ed4`.
+
+The caption "Pure SwiftUI" identifies this app's existing scrolling path, not
+an Apple reference implementation. Both versions retain the app's existing input
+controls and custom keyboard accessory. This is not a controlled benchmark or
+proof of behavior across all input types, containers, keyboards, or OS versions.
+The earlier simultaneous-sync edit is not used here because it omitted part of
+the focus movement; this published version preserves each selected interval.
+
 ## Verified on iPhone Simulator
 
 Source: `7162731f3204f05081d382d3f82e00fb0cc669fb`.
