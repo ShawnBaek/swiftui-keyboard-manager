@@ -2,6 +2,8 @@
 
 ## Real-device Items and Notes comparison
 
+https://github.com/user-attachments/assets/e77593c4-07bb-4449-bd41-62d627b28162
+
 The maintainer supplied both recordings on September 27, 2026, from TravelCrumb
 on an iPhone 15 Pro running iOS 27.0. The library integration uses revision
 `a9171403f9a0eb194d036c396a4f2b9523789a41`.

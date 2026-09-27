@@ -25,6 +25,8 @@ Left: **Pure SwiftUI** (the app's existing scroll view). Right:
 **SwiftUIKeyboardManager**. The left side plays Items then Notes once,
 followed immediately by the same sequence on the right.
 
+https://github.com/user-attachments/assets/e77593c4-07bb-4449-bd41-62d627b28162
+
 Both recordings keep their original playback speed and complete focus movements.
 Repeated attempts and the trailing gallery scene were removed; the inactive side
 holds a still frame. This demonstrates one app on one iPhone, not a universal
