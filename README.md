@@ -126,6 +126,8 @@ and converts the active input into scroll-content coordinates. It compares
 the input to the keyboard's converted end frame,
 adds only the needed reveal distance, clamps the offset, and changes inset and
 offset using the keyboard notification's animation duration and curve.
+The hosted content fills the host with its top pinned, so a row that animates
+in grows the content downward instead of shifting everything above it.
 
 Apple already provides keyboard safe areas, dismissal modifiers and
 UIKeyboardLayoutGuide. This package packages an explicit reveal policy for
@@ -171,7 +173,9 @@ list of shipping apps.
 Please report the OS/device, keyboard type, container structure, a small
 reproduction and a short recording. Do not include private typed text.
 Run `swift test` for geometry checks and build the sample for UIKit code.
-Host-platform tests alone do not compile the iOS bridge.
+Host-platform tests alone do not compile the iOS bridge. The bridge's layout
+tests run on an iPhone Simulator:
+`xcodebuild test -scheme SwiftUIKeyboardManager -destination 'platform=iOS Simulator,name=<iPhone>'`.
 
 ## License
 

@@ -18,7 +18,7 @@ struct KeyboardTrackingScrollView<Content: View>: UIViewControllerRepresentable 
     }
 
     func updateUIViewController(_ controller: KeyboardScrollController<Content>, context: Context) {
-        controller.host.rootView = content()
+        controller.host.rootView = TopAlignedContent(content: content())
         controller.onUserScroll = onUserScroll
         controller.mode = mode
         controller.spacing = spacing
@@ -72,8 +72,23 @@ final class KeyboardMarkerView: UIView {
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? { nil }
 }
 
+/// Keeps the hosted content's top in place while the content animates to a new height.
+///
+/// A UIHostingController centers its root. When content grows inside an animation, SwiftUI lays
+/// it out before Auto Layout gives the host its new intrinsic height, so a root that sized itself
+/// to its content would animate to the taller height inside the still-shorter host. Centering
+/// that animated root drops everything by half the change, and it slides back as the animation
+/// ends. Taking exactly the host's height, with the content pinned to the top, avoids the shift.
+struct TopAlignedContent<Content: View>: View {
+    var content: Content
+
+    var body: some View {
+        content.frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity, alignment: .top)
+    }
+}
+
 final class KeyboardScrollController<Content: View>: UIViewController, UIScrollViewDelegate {
-    let host: UIHostingController<Content>
+    let host: UIHostingController<TopAlignedContent<Content>>
     var onUserScroll: () -> Void
     var mode: SwipeToDismiss
     var spacing: CGFloat
@@ -84,7 +99,7 @@ final class KeyboardScrollController<Content: View>: UIViewController, UIScrollV
     private weak var activeInput: UIView?
 
     init(content: Content, mode: SwipeToDismiss, spacing: CGFloat, onUserScroll: @escaping () -> Void) {
-        host = UIHostingController(rootView: content)
+        host = UIHostingController(rootView: TopAlignedContent(content: content))
         self.onUserScroll = onUserScroll
         self.mode = mode
         self.spacing = spacing
