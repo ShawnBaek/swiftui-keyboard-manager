@@ -5,7 +5,7 @@ Keep your focused input in view — without rewriting your SwiftUI fields.
 A small, dependency-free Swift package for keyboard-synchronized vertical scrolling.
 Built from a real form used in Native Mobile.
 
-> Initial development release. Build support: iOS 17+, Swift 6, Xcode 16+.
+> Build support: iOS 17+, Swift 6, Xcode 16+.
 > Keyboard behavior targets iPhone and iPad; macOS uses a plain ScrollView fallback.
 > A successful build is not a guarantee across every OS, keyboard, or container.
 
@@ -40,14 +40,14 @@ In Xcode, choose **File → Add Package Dependencies** and enter:
 https://github.com/ShawnBaek/swiftui-keyboard-manager
 ```
 
-Until the first versioned release, select the **main** branch.
-Select the **SwiftUIKeyboardManager** library for your app target.
+Choose **Up to Next Major Version** from **1.0.0**, then select the
+**SwiftUIKeyboardManager** library for your app target.
 
 Or in `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/ShawnBaek/swiftui-keyboard-manager.git", branch: "main")
+    .package(url: "https://github.com/ShawnBaek/swiftui-keyboard-manager.git", from: "1.0.0")
 ]
 // In your target:
 dependencies: [
